@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Checkout — DK Fashions{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="wrap">
+    <div class="section-head"><h2>Checkout</h2></div>
+
+    <div class="cart-layout">
+      <form method="post" class="panel" novalidate>
+        {% csrf_token %}
+        <h3 style="margin-bottom:1.2rem">Shipping details</h3>
+
+        {% for field in form %}
+          <div class="field">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% for e in field.errors %}<div class="err">{{ e }}</div>{% endfor %}
+          </div>
+        {% endfor %}
+
+        <h3 style="margin:1.4rem 0 .6rem">Payment</h3>
+        <p class="muted" style="font-size:.88rem;margin-top:0">
+          This is a demo store — no real payment is taken. Placing the order confirms your basket.
+        </p>
+
+        <button class="btn btn-primary btn-block" type="submit" style="margin-top:1rem">
+          Place order · ${{ cart.total|floatformat:2|intcomma }}
+        </button>
+      </form>
+
+      <aside class="summary">
+        <h3>Your order</h3>
+        {% for row in cart %}
+          <div class="line">
+            <span>{{ row.quantity }} × {{ row.product.name }}</span>
+            <span>${{ row.line_total|floatformat:2|intcomma }}</span>
+          </div>
+        {% endfor %}
+        <div class="line" style="border-top:1px solid var(--line);margin-top:.5rem;padding-top:.7rem">
+          <span>Subtotal</span><span>${{ cart.subtotal|floatformat:2|intcomma }}</span>
+        </div>
+        {% if cart.discount %}
+          <div class="line discount"><span>Promo {{ cart.promo_code }}</span><span>−${{ cart.discount|floatformat:2|intcomma }}</span></div>
+        {% else %}
+          <form class="promo-form" action="{% url 'store:apply_promo' %}" method="post" style="margin-top:.8rem">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="store:checkout">
+            <input type="text" name="promo" placeholder="Promo code ({{ PROMO_CODE }})">
+            <button class="btn btn-dark btn-sm" type="submit">Apply</button>
+          </form>
+        {% endif %}
+        <div class="line total"><span>Total</span><span>${{ cart.total|floatformat:2|intcomma }}</span></div>
+      </aside>
+    </div>
+  </div>
+</section>
+{% endblock %}

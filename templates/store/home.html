@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load static store_extras %}
+{% block title %}DK Fashions — Wear the moment{% endblock %}
+
+{% block content %}
+<section class="hero" style="--hero-img:url('https://images.unsplash.com/photo-1445205170230-053b83016050?w=1800&q=80&auto=format&fit=crop')">
+  <div class="wrap">
+    <div class="hero-content">
+      <span class="eyebrow">New Season · 2026</span>
+      <h1>Dress like<br>the <span class="accent">main character.</span></h1>
+      <p>Bright, considered pieces that move with you — from off-duty denim to evenings that ask for more.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="{% url 'store:catalog' %}">Shop the collection</a>
+        <a class="btn btn-ghost" href="#categories">Browse categories</a>
+      </div>
+      <div class="hero-badge">{% icon 'spark' 18 %} 20% off with code <b>{{ PROMO_CODE }}</b></div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>New Season 2026<i class="dot">✦</i>Free shipping over $75<i class="dot">✦</i>20% off with {{ PROMO_CODE }}<i class="dot">✦</i>Handpicked fits<i class="dot">✦</i>Free 30-day returns<i class="dot">✦</i></span>
+    <span>New Season 2026<i class="dot">✦</i>Free shipping over $75<i class="dot">✦</i>20% off with {{ PROMO_CODE }}<i class="dot">✦</i>Handpicked fits<i class="dot">✦</i>Free 30-day returns<i class="dot">✦</i></span>
+  </div>
+</div>
+
+<section class="section" id="categories">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <span class="eyebrow">Find your fit</span>
+        <h2>Shop by category</h2>
+      </div>
+      <a class="link" href="{% url 'store:catalog' %}">View all →</a>
+    </div>
+    <div class="cat-grid reveal">
+      {% for c in categories %}
+        <a class="cat-card" href="{% url 'store:catalog' %}?category={{ c.slug }}">
+          <span class="cat-ico">{% cat_icon c.slug 26 %}</span>
+          <div>
+            <h3>{{ c.name }}</h3>
+            <div class="count">{{ c.products.count }} item{{ c.products.count|pluralize }}</div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <span class="eyebrow">Editors' picks</span>
+        <h2>Featured this week</h2>
+      </div>
+      <a class="link" href="{% url 'store:catalog' %}?sort=new">See more →</a>
+    </div>
+    <div class="product-grid reveal">
+      {% for p in featured %}
+        {% include "store/_product_card.html" %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="editorial reveal" style="--ed-img:url('https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1600&q=80&auto=format&fit=crop')">
+      <div class="editorial-inner">
+        <span class="eyebrow">The lookbook</span>
+        <h2>Made to be noticed.</h2>
+        <p>Statement silhouettes and everyday essentials, styled for the season ahead. Discover the pieces everyone's asking about.</p>
+        <a class="btn btn-light" href="{% url 'store:catalog' %}?sort=new">Explore new arrivals →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if trending %}
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <span class="eyebrow">Flying off the rails</span>
+        <h2>Most bought</h2>
+      </div>
+    </div>
+    <div class="rail reveal">
+      {% for p in trending %}
+        {% include "store/_product_card.html" %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <span class="eyebrow">Fresh in</span>
+        <h2>New arrivals</h2>
+      </div>
+      <a class="link" href="{% url 'store:catalog' %}?sort=new">Shop new →</a>
+    </div>
+    <div class="product-grid reveal">
+      {% for p in new_arrivals %}
+        {% include "store/_product_card.html" %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap">
+    <div class="newsletter reveal">
+      <span class="eyebrow" style="color:var(--gold)">Stay in the loop</span>
+      <h2>Get 10% off your first order</h2>
+      <p>Join the DK Fashions list for early access to drops, styling notes, and members-only offers.</p>
+      <form class="news-form" onsubmit="return false;">
+        <input type="email" placeholder="you@example.com" aria-label="Email" required>
+        <button class="btn btn-primary" type="submit">Subscribe</button>
+      </form>
+      <div class="news-thanks" hidden>Thanks — you're on the list! ✦</div>
+    </div>
+  </div>
+</section>
+{% endblock %}

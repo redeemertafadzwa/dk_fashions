@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load store_extras %}
+{% block title %}Confirm your email — DK Fashions{% endblock %}
+
+{% block content %}
+<div class="wrap auth-wrap">
+  <div class="auth-card center">
+    <div class="medallion brand" style="margin-bottom:1rem">{% icon 'mail' 34 %}</div>
+    <h1>Check your email</h1>
+    <p class="sub">We sent a 6-digit code to <b>{{ email }}</b>. Enter it below to confirm your account.</p>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <div class="field">
+        {{ form.code }}
+        {% for e in form.code.errors %}<div class="err">{{ e }}</div>{% endfor %}
+      </div>
+      <button class="btn btn-primary btn-block" type="submit">Confirm &amp; continue</button>
+    </form>
+
+    <p class="auth-alt">
+      Didn't get it?
+      <a href="{% url 'accounts:resend_code' %}">Resend code</a>
+    </p>
+    <p class="muted" style="font-size:.78rem;margin-top:.6rem">
+      In development the code is printed in the server console.
+    </p>
+  </div>
+</div>
+{% endblock %}

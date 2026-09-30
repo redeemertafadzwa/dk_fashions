@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load humanize store_extras %}
+{% block title %}Your cart — DK Fashions{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="wrap">
+    <div class="section-head"><h2>Your cart</h2></div>
+
+    {% if cart|length %}
+    <div class="cart-layout">
+      <div>
+        {% for row in cart %}
+          <div class="cart-item">
+            <a href="{{ row.product.get_absolute_url }}">
+              <img src="{{ row.product.display_image }}" alt="{{ row.product.name }}">
+            </a>
+            <div>
+              <div class="product-cat">{{ row.product.category.name }}</div>
+              <a href="{{ row.product.get_absolute_url }}"><div class="name">{{ row.product.name }}</div></a>
+              <div class="muted" style="font-size:.85rem">${{ row.product.price|floatformat:2|intcomma }} each</div>
+              <form action="{% url 'store:cart_update' row.product.id %}" method="post"
+                    data-qty data-autosubmit="1" style="margin-top:.5rem;display:inline-flex">
+                {% csrf_token %}
+                <div class="qty-box">
+                  <button type="button" data-step="down">−</button>
+                  <input type="text" name="quantity" value="{{ row.quantity }}" inputmode="numeric">
+                  <button type="button" data-step="up">+</button>
+                </div>
+              </form>
+              <form action="{% url 'store:cart_remove' row.product.id %}" method="post" style="margin-top:.4rem">
+                {% csrf_token %}
+                <button class="rm" type="submit">Remove</button>
+              </form>
+            </div>
+            <div style="text-align:right;font-weight:700">${{ row.line_total|floatformat:2|intcomma }}</div>
+          </div>
+        {% endfor %}
+        <a href="{% url 'store:catalog' %}" class="btn btn-light" style="margin-top:1.4rem">← Continue shopping</a>
+      </div>
+
+      <aside class="summary">
+        <h3>Order summary</h3>
+
+        {% if cart.promo_code %}
+          <div class="promo-applied">
+            <span>Code {{ cart.promo_code }} · −{{ PROMO_DISCOUNT_PERCENT }}%</span>
+            <form action="{% url 'store:remove_promo' %}" method="post">{% csrf_token %}
+              <button type="submit">remove</button>
+            </form>
+          </div>
+        {% else %}
+          <form class="promo-form" action="{% url 'store:apply_promo' %}" method="post">
+            {% csrf_token %}
+            <input type="text" name="promo" placeholder="Promo code" value="">
+            <button class="btn btn-dark btn-sm" type="submit">Apply</button>
+          </form>
+          <p class="muted" style="font-size:.78rem;margin:-.4rem 0 1rem">
+            Try <b>{{ PROMO_CODE }}</b> for {{ PROMO_DISCOUNT_PERCENT }}% off.
+          </p>
+        {% endif %}
+
+        <div class="line"><span>Subtotal</span><span>${{ cart.subtotal|floatformat:2|intcomma }}</span></div>
+        {% if cart.discount %}
+          <div class="line discount"><span>Discount ({{ PROMO_DISCOUNT_PERCENT }}%)</span><span>−${{ cart.discount|floatformat:2|intcomma }}</span></div>
+        {% endif %}
+        <div class="line"><span>Shipping</span><span>{% if cart.total >= 75 %}Free{% else %}Calculated at checkout{% endif %}</span></div>
+        <div class="line total"><span>Total</span><span>${{ cart.total|floatformat:2|intcomma }}</span></div>
+
+        <a class="btn btn-primary btn-block" href="{% url 'store:checkout' %}" style="margin-top:1.2rem">Checkout</a>
+      </aside>
+    </div>
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-ico">{% icon 'bag' 30 %}</div>
+        <h2>Your cart is empty</h2>
+        <p class="muted">Let's fix that — the good stuff is waiting.</p>
+        <a class="btn btn-primary" href="{% url 'store:catalog' %}">Start shopping</a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

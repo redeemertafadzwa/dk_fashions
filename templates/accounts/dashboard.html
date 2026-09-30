@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% load humanize store_extras %}
+{% block title %}Dashboard — DK Fashions{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="wrap">
+    <div class="dash-head">
+      <div>
+        <span class="eyebrow">Your space</span>
+        <h1 style="font-size:2.4rem;margin:0">Hi, {{ user.display_name }}</h1>
+      </div>
+      <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+        {% if user.is_staff %}
+          <a class="btn btn-ghost btn-sm" href="{% url 'accounts:manage_users' %}">Manage users</a>
+          <a class="btn btn-ghost btn-sm" href="/admin/">Admin site</a>
+        {% endif %}
+        <a class="btn btn-light btn-sm" href="{% url 'accounts:logout' %}">Log out</a>
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat">
+        <div class="n">{{ recent_searches|length }}</div>
+        <div class="l">Recent searches</div>
+      </div>
+      <div class="stat">
+        <div class="n">{{ my_orders|length }}</div>
+        <div class="l">Your orders</div>
+      </div>
+      <div class="stat">
+        <div class="n">
+          {% if user.is_superuser %}Owner{% elif user.is_staff %}Admin{% else %}Member{% endif %}
+        </div>
+        <div class="l">Account level</div>
+      </div>
+    </div>
+
+    <div class="dash-grid">
+      <!-- Recent searches -->
+      <div class="panel">
+        <h3>{% icon 'clock' 20 %} Your recent searches</h3>
+        {% if recent_searches %}
+          <div style="margin-top:.8rem">
+            {% for s in recent_searches %}
+              <a class="search-tag" href="{% url 'store:catalog' %}?q={{ s.query|urlencode }}">
+                {{ s.query }} <span class="muted" style="font-size:.75rem">· {{ s.results }} result{{ s.results|pluralize }}</span>
+              </a>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="empty">You haven't searched yet. <a href="{% url 'store:catalog' %}" style="color:var(--brand)">Find something →</a></p>
+        {% endif %}
+      </div>
+
+      <!-- Most searched (global) -->
+      <div class="panel">
+        <h3>{% icon 'flame' 20 %} Most searched</h3>
+        {% if most_searched %}
+          <div style="margin-top:.8rem">
+            {% for row in most_searched %}
+              <a class="search-tag" href="{% url 'store:catalog' %}?q={{ row.query|urlencode }}">
+                {{ row.query }} <span class="n">{{ row.n }}</span>
+              </a>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="empty">No search trends yet — check back soon.</p>
+        {% endif %}
+      </div>
+
+      <!-- Most bought -->
+      <div class="panel">
+        <h3>{% icon 'bag' 20 %} Most bought</h3>
+        {% if most_bought %}
+          <ul class="mini-list" style="margin-top:.6rem">
+            {% for p in most_bought %}
+              <li class="mini-item">
+                <img src="{{ p.display_image }}" alt="{{ p.name }}">
+                <div style="flex:1">
+                  <a href="{{ p.get_absolute_url }}"><div class="nm">{{ p.name }}</div></a>
+                  <div class="mt">{{ p.purchase_count }} sold · ${{ p.price|floatformat:2 }}</div>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="empty">No best-sellers yet. Be the first to shop!</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Recent orders -->
+    <div class="panel" style="margin-top:1.4rem">
+      <h3>{% icon 'box' 20 %} Your recent orders</h3>
+      {% if my_orders %}
+        <div class="table-wrap" style="margin-top:1rem;border:0">
+          <table class="data">
+            <thead><tr><th>Order</th><th>Date</th><th>Items</th><th>Total</th><th>Status</th></tr></thead>
+            <tbody>
+              {% for o in my_orders %}
+                <tr>
+                  <td>#{{ o.id }}</td>
+                  <td>{{ o.created_at|date:"M j, Y" }}</td>
+                  <td>{{ o.item_count }}</td>
+                  <td>${{ o.total|floatformat:2|intcomma }}</td>
+                  <td><span class="pill brand">{{ o.get_status_display }}</span></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="empty">No orders yet. <a href="{% url 'store:catalog' %}" style="color:var(--brand)">Start shopping →</a></p>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

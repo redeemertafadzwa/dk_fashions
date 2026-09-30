@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load humanize store_extras %}
+{% block title %}Order confirmed — DK Fashions{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="wrap" style="max-width:720px">
+    <div class="panel center" style="padding:3rem 2rem">
+      <div class="medallion success">{% icon 'check' 38 %}</div>
+      <span class="eyebrow">Order #{{ order.id }}</span>
+      <h1 style="font-size:2.4rem;margin:.4rem 0">Thank you, {{ order.full_name }}!</h1>
+      <p class="muted">A confirmation has been sent to {{ order.email }}. Your order is on its way.</p>
+
+      <div style="text-align:left;margin:2rem 0;border-top:1px solid var(--line);padding-top:1.2rem">
+        {% for item in order.items.all %}
+          <div class="line">
+            <span>{{ item.quantity }} × {{ item.name }}</span>
+            <span>${{ item.line_total|floatformat:2|intcomma }}</span>
+          </div>
+        {% endfor %}
+        <div class="line" style="border-top:1px solid var(--line);margin-top:.5rem;padding-top:.7rem">
+          <span>Subtotal</span><span>${{ order.subtotal|floatformat:2|intcomma }}</span>
+        </div>
+        {% if order.discount %}
+          <div class="line discount"><span>Promo {{ order.promo_code }}</span><span>−${{ order.discount|floatformat:2|intcomma }}</span></div>
+        {% endif %}
+        <div class="line total"><span>Total paid</span><span>${{ order.total|floatformat:2|intcomma }}</span></div>
+      </div>
+
+      <div style="display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap">
+        <a class="btn btn-primary" href="{% url 'store:catalog' %}">Keep shopping</a>
+        {% if user.is_authenticated %}
+          <a class="btn btn-ghost" href="{% url 'accounts:dashboard' %}">View dashboard</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

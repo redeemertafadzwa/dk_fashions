@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load store_extras %}
+{% block title %}
+  {% if query %}“{{ query }}” — {% elif active_category %}{{ active_category.name }} — {% endif %}DK Fashions
+{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="wrap">
+    <div class="section-head" style="margin-bottom:1.4rem">
+      <div>
+        <span class="eyebrow">
+          {% if query %}Search results{% elif active_category %}{{ active_category.tagline }}{% else %}The collection{% endif %}
+        </span>
+        <h2>
+          {% if query %}Results for “{{ query }}”
+          {% elif active_category %}{{ active_category.name }}
+          {% else %}Shop all{% endif %}
+        </h2>
+      </div>
+    </div>
+
+    <div class="catalog">
+      <aside class="filters">
+        <h4>Categories</h4>
+        <ul class="filter-list">
+          <li><a href="{% url 'store:catalog' %}" class="{% if not active_category %}active{% endif %}">All products</a></li>
+          {% for c in categories %}
+            <li>
+              <a href="{% url 'store:catalog' %}?category={{ c.slug }}"
+                 class="{% if active_category.slug == c.slug %}active{% endif %}">
+                <span class="lbl">{% cat_icon c.slug 17 %} {{ c.name }}</span>
+                <span class="muted">{{ c.products.count }}</span>
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </aside>
+
+      <div>
+        <div class="catalog-head">
+          <span class="count">{{ products|length }} item{{ products|length|pluralize }}</span>
+          <form method="get" id="sortForm">
+            {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+            {% if active_category %}<input type="hidden" name="category" value="{{ active_category.slug }}">{% endif %}
+            <select name="sort" class="sort-select" onchange="document.getElementById('sortForm').submit()">
+              {% for val, label in sort_options %}
+                <option value="{{ val }}" {% if sort == val %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </form>
+        </div>
+
+        {% if products %}
+          <div class="product-grid">
+            {% for p in products %}
+              {% include "store/_product_card.html" %}
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty-state">
+            <div class="empty-ico">{% icon 'search' 30 %}</div>
+            <h2>Nothing matched{% if query %} “{{ query }}”{% endif %}</h2>
+            <p class="muted">Try a different search or browse the full collection.</p>
+            <a class="btn btn-primary" href="{% url 'store:catalog' %}">Shop all</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

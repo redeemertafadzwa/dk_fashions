@@ -1,0 +1,18 @@
+{% load humanize %}
+<article class="product-card">
+  <div class="product-media">
+    {% if p.is_featured %}<span class="product-tag hot">Featured</span>{% endif %}
+    <a href="{{ p.get_absolute_url }}">
+      <img src="{{ p.display_image }}" alt="{{ p.name }}" loading="lazy">
+    </a>
+    <form class="product-quickadd" action="{% url 'store:cart_add' p.id %}" method="post">
+      {% csrf_token %}
+      <button class="btn btn-dark btn-block btn-sm" type="submit">Add to cart</button>
+    </form>
+  </div>
+  <div class="product-info">
+    <div class="product-cat">{{ p.category.name }}</div>
+    <h3 class="product-name"><a href="{{ p.get_absolute_url }}">{{ p.name }}</a></h3>
+    <div class="product-price"><span class="cur">$</span>{{ p.price|floatformat:2|intcomma }}</div>
+  </div>
+</article>

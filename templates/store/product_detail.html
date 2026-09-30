@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}{{ product.name }} — DK Fashions{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="wrap">
+    <p class="muted" style="margin-bottom:1.4rem;font-size:.9rem">
+      <a href="{% url 'store:catalog' %}">Shop</a> /
+      <a href="{% url 'store:catalog' %}?category={{ product.category.slug }}">{{ product.category.name }}</a> /
+      {{ product.name }}
+    </p>
+
+    <div class="pdp">
+      <div class="pdp-media">
+        <img src="{{ product.display_image }}" alt="{{ product.name }}">
+      </div>
+
+      <div class="pdp-info">
+        <span class="eyebrow">{{ product.category.name }}</span>
+        <h1>{{ product.name }}</h1>
+        <div class="pdp-price"><span class="cur muted">$</span>{{ product.price|floatformat:2|intcomma }}</div>
+        <p class="pdp-desc">{{ product.description }}</p>
+
+        {% if product.size_list %}
+          <label style="font-weight:600;font-size:.85rem">Select size</label>
+          <div class="size-row">
+            {% for s in product.size_list %}
+              <span class="size-pill">{{ s }}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <form action="{% url 'store:cart_add' product.id %}" method="post">
+          {% csrf_token %}
+          <input type="hidden" name="size" id="selectedSize">
+          <input type="hidden" name="next" value="cart">
+          <div class="qty-add">
+            <div class="qty-box" data-qty>
+              <button type="button" data-step="down" aria-label="Decrease">−</button>
+              <input type="text" name="quantity" value="1" inputmode="numeric" aria-label="Quantity">
+              <button type="button" data-step="up" aria-label="Increase">+</button>
+            </div>
+            <button class="btn btn-primary" type="submit" style="flex:1">
+              {% if product.in_stock %}Add to cart{% else %}Notify me{% endif %}
+            </button>
+          </div>
+        </form>
+
+        <div class="pdp-meta">
+          <div class="row"><b>Colour</b><span>{{ product.color|default:"—" }}</span></div>
+          <div class="row"><b>Category</b><span>{{ product.category.name }}</span></div>
+          <div class="row"><b>Availability</b>
+            <span>{% if product.in_stock %}In stock — ships in 2–4 days{% else %}Out of stock{% endif %}</span>
+          </div>
+          <div class="row"><b>Returns</b><span>Free 30-day returns</span></div>
+        </div>
+      </div>
+    </div>
+
+    {% if related %}
+      <div class="section-head" style="margin:3.5rem 0 1.6rem">
+        <h2>You may also like</h2>
+      </div>
+      <div class="product-grid">
+        {% for p in related %}
+          {% include "store/_product_card.html" %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
