@@ -2,7 +2,8 @@
 # Vercel build step: install deps, collect static, and set up the database.
 set -e
 
-pip install -r requirements.txt
+# Vercel's Python is "externally managed" (PEP 668), so allow the install.
+python3.12 -m pip install --break-system-packages -r requirements.txt
 
 python3.12 manage.py collectstatic --noinput --clear
 
