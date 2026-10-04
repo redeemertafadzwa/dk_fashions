@@ -9,6 +9,21 @@
     });
   }
 
+  // Hero video: some browsers defer autoplay — nudge it, and retry on any interaction
+  var heroVid = document.querySelector('.hero-media');
+  if (heroVid) {
+    var tryPlay = function () {
+      var pr = heroVid.play();
+      if (pr && pr.catch) pr.catch(function () { /* blocked until interaction */ });
+    };
+    tryPlay();
+    heroVid.addEventListener('loadeddata', tryPlay);
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) tryPlay(); });
+    ['pointerdown', 'touchstart', 'keydown', 'scroll'].forEach(function (evt) {
+      window.addEventListener(evt, tryPlay, { once: true, passive: true });
+    });
+  }
+
   // Header lifts on scroll
   if (header) {
     var onScroll = function () {

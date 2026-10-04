@@ -3,10 +3,18 @@
 {% block title %}DK Fashions — Wear the moment{% endblock %}
 
 {% block content %}
-<section class="hero" style="--hero-img:url('https://images.unsplash.com/photo-1445205170230-053b83016050?w=1800&q=80&auto=format&fit=crop')">
+<section class="hero" style="--hero-img:url('{% static 'img/hero-poster.jpg' %}')">
+  <video class="hero-media" autoplay muted loop playsinline preload="metadata"
+         poster="{% static 'img/hero-poster.jpg' %}" aria-hidden="true" tabindex="-1">
+    <source src="{% static 'video/hero.mp4' %}" type="video/mp4">
+  </video>
+  <div class="hero-scrim" aria-hidden="true"></div>
+  <div class="hero-orb a" aria-hidden="true"></div>
+  <div class="hero-orb b" aria-hidden="true"></div>
+  <div class="hero-grid" aria-hidden="true"></div>
   <div class="wrap">
     <div class="hero-content">
-      <span class="eyebrow">New Season · 2026</span>
+      <span class="eyebrow"><i class="pulse"></i>New Season · 2026</span>
       <h1>Dress like<br>the <span class="accent">main character.</span></h1>
       <p>Bright, considered pieces that move with you — from off-duty denim to evenings that ask for more.</p>
       <div class="hero-cta">
@@ -16,6 +24,7 @@
       <div class="hero-badge">{% icon 'spark' 18 %} 20% off with code <b>{{ PROMO_CODE }}</b></div>
     </div>
   </div>
+  <a class="hero-scroll" href="#categories" aria-label="Scroll to categories"><span></span></a>
 </section>
 
 <div class="marquee" aria-hidden="true">
