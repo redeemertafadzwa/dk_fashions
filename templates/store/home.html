@@ -46,11 +46,15 @@
     <div class="cat-grid reveal">
       {% for c in categories %}
         <a class="cat-card" href="{% url 'store:catalog' %}?category={{ c.slug }}">
-          <span class="cat-ico">{% cat_icon c.slug 26 %}</span>
-          <div>
+          {% if c.image_url %}
+            <img src="{{ c.image_url }}" alt="{{ c.name }}" loading="lazy">
+          {% endif %}
+          <span class="cat-ico">{% cat_icon c.slug 20 %}</span>
+          <div class="cat-meta">
             <h3>{{ c.name }}</h3>
             <div class="count">{{ c.products.count }} item{{ c.products.count|pluralize }}</div>
           </div>
+          <span class="cat-go" aria-hidden="true">&rarr;</span>
         </a>
       {% endfor %}
     </div>

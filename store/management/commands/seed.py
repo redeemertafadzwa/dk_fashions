@@ -7,14 +7,14 @@ from store.models import Category, Product
 IMG = "https://images.unsplash.com/photo-{}?w=800&q=80&auto=format&fit=crop"
 
 CATEGORIES = [
-    ("Dresses", "\U0001F457", "Effortless day-to-night silhouettes", 1),
-    ("Tops & Shirts", "\U0001F455", "Everyday staples with a twist", 2),
-    ("Denim", "\U0001F456", "Selvedge, raw and washed blues", 3),
-    ("Outerwear", "\U0001F9E5", "Coats and jackets for every season", 4),
-    ("Footwear", "\U0001F45F", "Sneakers, heels and boots", 5),
-    ("Bags", "\U0001F45C", "Totes, crossbodies and clutches", 6),
-    ("Accessories", "\U0001F576", "The finishing touches", 7),
-    ("Activewear", "\U0001F3C3", "Move-with-you performance fits", 8),
+    ("Dresses", "👗", "Effortless day-to-night silhouettes", 1, "1485462537746-965f33f7f6a7"),
+    ("Tops & Shirts", "👕", "Everyday staples with a twist", 2, "1620799140408-edc6dcb6d633"),
+    ("Denim", "👖", "Selvedge, raw and washed blues", 3, "1541099649105-f69ad21f3246"),
+    ("Outerwear", "🧥", "Coats and jackets for every season", 4, "1543076447-215ad9ba6923"),
+    ("Footwear", "👟", "Sneakers, heels and boots", 5, "1595950653106-6c9ebd614d3a"),
+    ("Bags", "👜", "Totes, crossbodies and clutches", 6, "1584917865442-de89df76afd3"),
+    ("Accessories", "🕶", "The finishing touches", 7, "1511499767150-a48a237f0083"),
+    ("Activewear", "🏃", "Move-with-you performance fits", 8, "1517836357463-d25dfeac3438"),
 ]
 
 # (category, name, price, color, sizes, featured, image_id, description)
@@ -109,7 +109,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING("Cleared existing catalogue."))
 
         cats = {}
-        for name, emoji, tagline, order in CATEGORIES:
+        for name, emoji, tagline, order, img in CATEGORIES:
             cat, _ = Category.objects.get_or_create(
                 name=name,
                 defaults={"emoji": emoji, "tagline": tagline, "order": order},
@@ -117,6 +117,7 @@ class Command(BaseCommand):
             cat.emoji = emoji
             cat.tagline = tagline
             cat.order = order
+            cat.image_url = IMG.format(img)
             cat.save()
             cats[name] = cat
         self.stdout.write(self.style.SUCCESS(f"Categories: {len(cats)}"))

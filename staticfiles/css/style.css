@@ -359,26 +359,39 @@ h1, h2, h3, h4 {
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;
 }
 .cat-card {
-  position: relative; border-radius: var(--radius); overflow: hidden;
-  background: var(--surface); border: 1px solid var(--line);
-  padding: 1.6rem 1.2rem; min-height: 130px;
-  display: flex; flex-direction: column; justify-content: space-between;
-  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  position: relative; display: block; isolation: isolate;
+  aspect-ratio: 3 / 4; border-radius: var(--radius); overflow: hidden;
+  background: var(--surface-2); border: 1px solid var(--line);
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
 }
-.cat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: transparent; }
+.cat-card:hover { transform: translateY(-5px); box-shadow: var(--shadow); border-color: transparent; }
+.cat-card img {
+  position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%;
+  object-fit: cover; transition: transform .7s cubic-bezier(.2,.7,.2,1);
+}
+.cat-card:hover img { transform: scale(1.08); }
+/* legibility wash under the label */
+.cat-card::before {
+  content: ""; position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(180deg, rgba(12,9,14,0) 38%, rgba(12,9,14,.52) 68%, rgba(12,9,14,.86) 100%);
+  transition: opacity .22s ease;
+}
 .cat-ico {
-  width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center;
-  background: #FDEBE5; color: var(--brand); transition: background .18s ease, color .18s ease;
+  position: absolute; z-index: 2; top: .7rem; left: .7rem;
+  width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center;
+  background: rgba(255,255,255,.92); color: var(--brand);
+  backdrop-filter: blur(6px); transition: background .18s ease, color .18s ease;
 }
 .cat-card:hover .cat-ico { background: var(--brand); color: #fff; }
-.cat-card h3 { font-size: 1.15rem; margin: .6rem 0 .1rem; }
-.cat-card .count { font-size: .82rem; color: var(--muted); }
-.cat-card::after {
-  content: "\2192"; position: absolute; top: 1.2rem; right: 1.3rem;
-  font-size: 1.1rem; color: var(--brand); opacity: 0; transform: translateX(-6px);
-  transition: all .2s ease;
+.cat-card .cat-meta { position: absolute; z-index: 2; left: .95rem; right: .95rem; bottom: .85rem; }
+.cat-card h3 { font-size: 1.12rem; margin: 0 0 .1rem; color: #fff; }
+.cat-card .count { font-size: .8rem; color: rgba(255,255,255,.78); }
+.cat-card .cat-go {
+  position: absolute; z-index: 2; right: .8rem; bottom: .95rem;
+  color: #fff; font-size: 1.05rem; opacity: 0; transform: translateX(-6px);
+  transition: all .22s ease;
 }
-.cat-card:hover::after { opacity: 1; transform: translateX(0); }
+.cat-card:hover .cat-go { opacity: 1; transform: translateX(0); }
 
 /* ---------------- Product grid & cards ---------------- */
 .product-grid {
