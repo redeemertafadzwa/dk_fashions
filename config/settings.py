@@ -196,3 +196,11 @@ PROMO_DISCOUNT_PERCENT = int(env("PROMO_DISCOUNT_PERCENT", "20"))
 EMAIL_CODE_TTL_MINUTES = 15
 
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
+
+# --- Behind a TLS-terminating proxy (Vercel/PaaS) ---
+# Vercel forwards HTTPS requests to the app as HTTP. Without this, Django sees
+# "http" while the browser sends an "https" Origin header, so every POST
+# (admin login, signup, checkout) fails CSRF validation with
+# "CSRF token from POST incorrect".
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+USE_X_FORWARDED_HOST = True
