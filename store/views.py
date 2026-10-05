@@ -1,6 +1,10 @@
+import os
+
 from django.conf import settings
 from django.contrib import messages
+from django.db import connection
 from django.db.models import Q
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .cart import Cart
@@ -204,3 +208,27 @@ def checkout(request):
 def order_success(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     return render(request, "store/order_success.html", {"order": order})
+
+
+def health(request):
+    """Deployment diagnostics. Reports configuration state only - never secrets."""
+    can_write = False
+    error = None
+    try:
+        with connection.cursor() as c:
+            c.execute("CREATE TABLE IF NOT EXISTS _dk_write_probe (id integer)")
+            c.execute("DROP TABLE _dk_write_probe")
+        can_write = True
+    except Exception as exc:
+        error = type(exc).__name__
+
+    return JsonResponse({
+        "db_engine": connection.vendor,                       # "postgresql" or "sqlite"
+        "db_writable": can_write,
+        "database_url_present": bool(os.environ.get("DATABASE_URL")),
+        "debug": settings.DEBUG,
+        "email_backend": settings.EMAIL_BACKEND.rsplit(".", 2)[-2],
+        "email_configured": bool(settings.EMAIL_HOST_USER and settings.EMAIL_HOST_PASSWORD),
+        "products": Product.objects.count(),
+        "db_error": error,
+    })
